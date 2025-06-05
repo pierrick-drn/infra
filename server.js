@@ -29,7 +29,7 @@ app.use('/api/users', (req, res, next) => {
 const frontendPath = path.join(__dirname, 'frontend');
 app.use(express.static(frontendPath));
 
-// 👉 Fallback toutes routes vers index.html (pour SPA ou frontend pur)
+// 👉 Fallback toutes routes vers index.html (pour SPA ou frontend)
 app.get('*', (req, res) => {
   res.sendFile(path.join(frontendPath, 'index.html'));
 });
