@@ -1,13 +1,16 @@
 const form = document.getElementById('loginForm');
 const resultat = document.getElementById('resultat');
 
+// Utilise l'origine actuelle (localhost ou Render)
+const API_BASE = window.location.origin;
+
 // Fonction pour afficher emploi du temps
 async function afficherEmploiDuTemps(username, schedule) {
   form.style.display = 'none';
   resultat.classList.remove('hidden');
 
   if (username === 'admin') {
-    const res = await fetch('http://localhost:3000/api/users/schedules');
+    const res = await fetch(`${API_BASE}/api/users/schedules`);
     const users = await res.json();
 
     let html = `<h2>Bienvenue ${username}</h2><h3>Plannings de tous les utilisateurs</h3>`;
@@ -56,7 +59,7 @@ form.addEventListener('submit', async (e) => {
   const password = document.getElementById('password').value;
 
   try {
-    const res = await fetch('http://localhost:3000/api/users/login', {
+    const res = await fetch(`${API_BASE}/api/users/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
@@ -68,7 +71,7 @@ form.addEventListener('submit', async (e) => {
       afficherEmploiDuTemps(username, data.schedule);
     } else {
       resultat.classList.remove('hidden');
-      resultat.innerText = data.message;
+      resultat.innerText = data.message || "Identifiants incorrects";
     }
   } catch (error) {
     resultat.classList.remove('hidden');
