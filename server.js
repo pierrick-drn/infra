@@ -11,13 +11,19 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+// Log de l'URI MongoDB pour vérifier si Render lit bien l'env
+console.log("🔍 URI MongoDB utilisée :", process.env.MONGODB_URI || "❌ non définie");
+
 // Connexion MongoDB
 mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('MongoDB connecté'))
-  .catch(err => console.error('Erreur MongoDB :', err));
+  .then(() => console.log('✅ MongoDB connecté sur Render'))
+  .catch(err => console.error('💥 Erreur MongoDB :', err));
 
 // Routes API
-app.use('/api/users', userRoutes);
+app.use('/api/users', (req, res, next) => {
+  console.log(`📡 [${req.method}] ${req.originalUrl}`);
+  next();
+}, userRoutes);
 
 // 👉 Sert les fichiers statiques (HTML, CSS, JS)
 const frontendPath = path.join(__dirname, 'frontend');
@@ -29,5 +35,5 @@ app.get('*', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Serveur lancé sur le port ${PORT}`);
+  console.log(`🚀 Serveur lancé sur le port ${PORT}`);
 });
