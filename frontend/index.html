@@ -15,7 +15,32 @@
       <button type="submit">Se connecter</button>
     </form>
 
-    <div id="resultat" class="hidden"></div>
+    <div id="resultat" class="hidden">
+      <div id="topSection">
+        <div id="emploisDuTempsContainer"></div>
+
+        <div id="userEventsContainer">
+          <h3>Mes événements</h3>
+          <form id="eventForm">
+            <input type="text" id="eventTitre" placeholder="Titre" required>
+            <input type="date" id="eventDate" required>
+            <select id="eventType">
+              <option value="personnel">Personnel</option>
+              <option value="professionnel">Professionnel</option>
+            </select>
+            <button type="submit">Ajouter</button>
+          </form>
+          <div id="userEvents"></div>
+        </div>
+
+        <div id="calendar-container">
+          <h3>Calendrier des événements</h3>
+          <div id="calendar"></div>
+          <div id="calendarEvents"></div>
+        </div>
+      </div>
+      <button id="logoutBtn" class="centeredLogout hidden">Se déconnecter</button>
+    </div>
   </div>
 
   <script src="script.js"></script>
