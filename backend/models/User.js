@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
@@ -87,3 +88,21 @@ router.post('/delete-event', async (req, res) => {
 });
 
 module.exports = router;
+=======
+const mongoose = require('mongoose');
+
+const EventSchema = new mongoose.Schema({
+  titre: String,
+  date: String,
+  type: String
+});
+
+const UserSchema = new mongoose.Schema({
+  username: String,
+  password: String,
+  schedule: [String],
+  events: [EventSchema] // ✅ tableau d'objets bien défini ici
+});
+
+module.exports = mongoose.model('User', UserSchema);
+>>>>>>> refs/remotes/origin/main
