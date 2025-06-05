@@ -17,7 +17,6 @@ mongoose.connect(process.env.MONGODB_URI)
 
 app.use('/api/users', userRoutes);
 
-// 👉 Route par défaut (si API uniquement)
 app.get('/', (req, res) => {
   res.send('Bienvenue sur mon API 😎');
 });
