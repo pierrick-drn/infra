@@ -33,7 +33,7 @@ async function afficherEmploiDuTemps(username, schedule) {
     `;
   }
 
-  // Ajout du bouton de déconnexion
+  // Ajout du bouton de déconnexion.
   const bouton = document.createElement('button');
   bouton.textContent = "Se déconnecter";
   bouton.id = "logoutBtn";
