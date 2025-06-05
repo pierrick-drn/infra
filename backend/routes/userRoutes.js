@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/User');
 const bcrypt = require('bcrypt');
+const User = require('../models/User');
 
 // 🔐 Connexion utilisateur
 router.post('/login', async (req, res) => {
@@ -50,11 +50,7 @@ router.post('/add-event', async (req, res) => {
       return res.status(404).json({ message: 'Utilisateur introuvable' });
     }
 
-    // Vérification du champ events
-    if (!user.events) {
-      console.log("ℹ️ Champ 'events' non défini, création forcée");
-      user.events = [];
-    }
+    if (!user.events) user.events = [];
 
     user.events.push({ titre, date, type });
     await user.save();
@@ -67,6 +63,7 @@ router.post('/add-event', async (req, res) => {
   }
 });
 
+// ❌ Supprimer un événement personnel
 router.post('/delete-event', async (req, res) => {
   const { username, index } = req.body;
 
