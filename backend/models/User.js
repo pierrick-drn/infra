@@ -1,16 +1,16 @@
 const mongoose = require('mongoose');
 
-const EventSchema = new mongoose.Schema({
+const eventSchema = new mongoose.Schema({
   titre: String,
   date: String,
   type: String
 });
 
-const UserSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
   username: String,
   password: String,
   schedule: [String],
-  events: [EventSchema] // ✅ tableau d'objets bien défini ici
+  events: [eventSchema]
 });
 
-module.exports = mongoose.model('User', UserSchema);
+module.exports = mongoose.model('User', userSchema);

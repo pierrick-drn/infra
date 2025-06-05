@@ -50,7 +50,6 @@ router.post('/add-event', async (req, res) => {
       return res.status(404).json({ message: 'Utilisateur introuvable' });
     }
 
-    // Vérification du champ events
     if (!user.events) {
       console.log("ℹ️ Champ 'events' non défini, création forcée");
       user.events = [];
@@ -67,6 +66,7 @@ router.post('/add-event', async (req, res) => {
   }
 });
 
+// ❌ Supprimer un événement par index
 router.post('/delete-event', async (req, res) => {
   const { username, index } = req.body;
 
