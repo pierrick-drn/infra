@@ -1,8 +1,0 @@
-{
-    "build": {
-      "builder": "NIXPACKS",
-      "buildCommand": "cd infra && npm install",
-      "startCommand": "cd infra && npm start"
-    }
-  }
-  
