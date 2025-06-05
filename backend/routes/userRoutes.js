@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcrypt');
 const User = require('../models/User');
+const bcrypt = require('bcrypt');
 
 // 🔐 Connexion utilisateur
 router.post('/login', async (req, res) => {
@@ -41,21 +41,14 @@ router.get('/schedules', async (req, res) => {
 // ➕ Ajouter un événement personnel
 router.post('/add-event', async (req, res) => {
   const { username, titre, date, type } = req.body;
-  console.log("➡️ Requête reçue pour ajout d’événement :", req.body);
-
   try {
     const user = await User.findOne({ username });
-    if (!user) {
-      console.log("❌ Utilisateur introuvable :", username);
-      return res.status(404).json({ message: 'Utilisateur introuvable' });
-    }
+    if (!user) return res.status(404).json({ message: 'Utilisateur introuvable' });
 
     if (!user.events) user.events = [];
-
     user.events.push({ titre, date, type });
     await user.save();
 
-    console.log("✅ Événement ajouté avec succès :", { titre, date, type });
     res.json({ message: 'Événement ajouté', events: user.events });
   } catch (err) {
     console.error("💥 Erreur serveur (add-event) :", err);
@@ -63,10 +56,9 @@ router.post('/add-event', async (req, res) => {
   }
 });
 
-// ❌ Supprimer un événement personnel
+// ❌ Supprimer un événement
 router.post('/delete-event', async (req, res) => {
   const { username, index } = req.body;
-
   try {
     const user = await User.findOne({ username });
     if (!user || !user.events || index < 0 || index >= user.events.length) {
