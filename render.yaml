@@ -3,6 +3,7 @@ services:
     name: projet-infra
     env: node
     plan: free
+    rootDir: .
     buildCommand: npm install
     startCommand: node server.js
     envVars:
