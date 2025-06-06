@@ -1,17 +1,18 @@
 const form = document.getElementById('loginForm');
 const resultat = document.getElementById('resultat');
-const API_BASE = window.location.origin;
-
 const logoutBtn = document.getElementById('logoutBtn');
-let eventsGlobaux = [];
 
+let eventsGlobaux = [];
+let jourActif = null;
+
+// Connexion
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const username = document.getElementById('username').value;
   const password = document.getElementById('password').value;
 
   try {
-    const res = await fetch(`${API_BASE}/api/users/login`, {
+    const res = await fetch(`${window.location.origin}/api/users/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
@@ -33,12 +34,15 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
+// Déconnexion
 logoutBtn.addEventListener('click', () => {
   localStorage.clear();
   form.style.display = 'flex';
   resultat.classList.add('hidden');
+  logoutBtn.classList.add('hidden');
 });
 
+// Affichage emploi du temps / événements
 async function afficherEmploiDuTemps(username, schedule, events = []) {
   form.style.display = 'none';
   resultat.classList.remove('hidden');
@@ -50,13 +54,32 @@ async function afficherEmploiDuTemps(username, schedule, events = []) {
   document.getElementById('calendarEvents').innerHTML = '';
 
   if (username === 'admin') {
-    const res = await fetch(`${API_BASE}/api/users/schedules`);
+    const res = await fetch(`${window.location.origin}/api/users/schedules`);
     const users = await res.json();
-    let html = `<h2>Bienvenue ${username}</h2><h3>Plannings de tous les utilisateurs</h3>`;
-    users.forEach(user => {
-      html += `<div><h4>${user.username}</h4><ul>${user.schedule.map(j => `<li>${j}</li>`).join('')}</ul></div>`;
-    });
-    document.getElementById('emploisDuTempsContainer').innerHTML = html;
+
+    let emploiHtml = `<h2>Bienvenue ${username}</h2><h3>Plannings de tous les utilisateurs</h3>`;
+    let events = [];
+
+    for (const user of users) {
+      emploiHtml += `<div class="emploi-ligne"><h4>${user.username}</h4><ul>${user.schedule.map(j => `<li>${j}</li>`).join('')}</ul></div>`;
+
+      // 🔍 Récupérer les events de chaque user
+      const resEvents = await fetch(`${window.location.origin}/api/users/get-events`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: user.username })
+      });
+
+      const data = await resEvents.json();
+      if (data.events && data.events.length > 0) {
+        events.push(...data.events.map(ev => ({ ...ev, owner: user.username })));
+      }
+    }
+
+    eventsGlobaux = events;
+    document.getElementById('emploisDuTempsContainer').innerHTML = emploiHtml;
+    afficherEvenementsAdmin(eventsGlobaux);
+    genererCalendrier(eventsGlobaux);
   } else {
     const jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
     let html = `<h2>Bienvenue ${username}</h2><h3>Emploi du temps</h3>`;
@@ -67,11 +90,12 @@ async function afficherEmploiDuTemps(username, schedule, events = []) {
     document.getElementById('emploisDuTempsContainer').innerHTML = html;
 
     eventsGlobaux = events;
-    genererCalendrier(eventsGlobaux);
     afficherEvenements(eventsGlobaux);
+    genererCalendrier(eventsGlobaux);
   }
 }
 
+// Affiche les events (utilisateur normal)
 function afficherEvenements(events) {
   const container = document.getElementById('userEvents');
   if (!events.length) {
@@ -87,36 +111,26 @@ function afficherEvenements(events) {
   `).join('');
 }
 
-document.addEventListener('submit', async (e) => {
-  if (e.target && e.target.id === 'eventForm') {
-    e.preventDefault();
-
-    const username = localStorage.getItem('username');
-    const titre = document.getElementById('eventTitre').value;
-    const date = document.getElementById('eventDate').value;
-    const type = document.getElementById('eventType').value;
-
-    const res = await fetch(`${API_BASE}/api/users/add-event`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, titre, date, type })
-    });
-
-    const data = await res.json();
-    if (res.ok) {
-      eventsGlobaux = data.events;
-      genererCalendrier(eventsGlobaux);
-      afficherEvenements(eventsGlobaux);
-      e.target.reset();
-    } else {
-      alert(data.message);
-    }
+// Affiche les events pour l’admin
+function afficherEvenementsAdmin(events) {
+  const container = document.getElementById('userEvents');
+  if (!events.length) {
+    container.innerHTML = "<p>Aucun événement</p>";
+    return;
   }
-});
 
+  container.innerHTML = events.map((e, index) => `
+    <div class="event-item">
+      <strong>${e.titre}</strong> (${e.date}) - ${e.type} — <em>${e.owner}</em>
+      <button class="delete-btn" onclick="supprimerEvenementAdmin('${e.owner}', ${index})">🗑️</button>
+    </div>
+  `).join('');
+}
+
+// Suppression événement pour utilisateur normal
 async function supprimerEvenement(index) {
   const username = localStorage.getItem('username');
-  const res = await fetch(`${API_BASE}/api/users/delete-event`, {
+  const res = await fetch(`${window.location.origin}/api/users/delete-event`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, index })
@@ -125,13 +139,32 @@ async function supprimerEvenement(index) {
   const data = await res.json();
   if (res.ok) {
     eventsGlobaux = data.events;
-    genererCalendrier(eventsGlobaux);
     afficherEvenements(eventsGlobaux);
+    genererCalendrier(eventsGlobaux);
   } else {
     alert(data.message);
   }
 }
 
+// Suppression pour admin
+async function supprimerEvenementAdmin(username, index) {
+  const res = await fetch(`${window.location.origin}/api/users/delete-event`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, index })
+  });
+
+  const data = await res.json();
+  if (res.ok) {
+    eventsGlobaux = eventsGlobaux.filter((_, i) => i !== index);
+    afficherEvenementsAdmin(eventsGlobaux);
+    genererCalendrier(eventsGlobaux);
+  } else {
+    alert(data.message);
+  }
+}
+
+// Générer calendrier
 function genererCalendrier(events = []) {
   const calendar = document.getElementById('calendar');
   const affichage = document.getElementById('calendarEvents');
@@ -175,8 +208,8 @@ function genererCalendrier(events = []) {
       });
 
       if (eventsJour.length) {
-        affichage.innerHTML = `<h4>Événements du ${jour}/${mois+1}</h4>` + eventsJour.map(e =>
-          `<p><strong>${e.titre}</strong> - ${e.type}</p>`
+        affichage.innerHTML = `<h4>Événements du ${jour}/${mois + 1}</h4>` + eventsJour.map(e =>
+          `<p><strong>${e.titre}</strong> - ${e.type} ${e.owner ? `(<em>${e.owner}</em>)` : ''}</p>`
         ).join('');
       } else {
         affichage.innerHTML = `<p>Aucun événement ce jour</p>`;
@@ -187,17 +220,20 @@ function genererCalendrier(events = []) {
   }
 }
 
+// Initialisation
 window.addEventListener('DOMContentLoaded', async () => {
   const username = localStorage.getItem('username');
   const schedule = JSON.parse(localStorage.getItem('schedule') || '[]');
 
   if (username && username !== 'admin') {
-    const res = await fetch(`${API_BASE}/api/users/get-events`, {
+    const res = await fetch(`${window.location.origin}/api/users/get-events`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username })
     });
     const data = await res.json();
     afficherEmploiDuTemps(username, schedule, data.events || []);
+  } else if (username === 'admin') {
+    afficherEmploiDuTemps('admin', [], []);
   }
 });

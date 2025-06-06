@@ -70,7 +70,7 @@ router.post('/add-event', async (req, res) => {
   }
 });
 
-// ❌ Supprimer un évent
+// ❌ Supprimer un événement
 router.post('/delete-event', async (req, res) => {
   const { username, index } = req.body;
 
@@ -87,6 +87,25 @@ router.post('/delete-event', async (req, res) => {
     res.json({ message: 'Événement supprimé', events: user.events });
   } catch (err) {
     console.error("💥 Erreur serveur (delete-event) :", err);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+});
+
+// 📦 Récupérer les événements d’un utilisateur (admin ou user)
+router.post('/get-events', async (req, res) => {
+  const { username } = req.body;
+  try {
+    console.log(`📡 [POST] /api/users/get-events pour ${username}`);
+
+    const user = await User.findOne({ username });
+    if (!user) {
+      console.log("❌ Utilisateur introuvable (get-events) :", username);
+      return res.status(404).json({ message: 'Utilisateur introuvable' });
+    }
+
+    res.json({ events: user.events || [] });
+  } catch (err) {
+    console.error("💥 Erreur serveur (get-events) :", err);
     res.status(500).json({ message: 'Erreur serveur' });
   }
 });
