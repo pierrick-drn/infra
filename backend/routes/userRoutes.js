@@ -70,7 +70,7 @@ router.post('/add-event', async (req, res) => {
   }
 });
 
-// ❌ Supprimer un événement
+// ❌ Supprimer un évent
 router.post('/delete-event', async (req, res) => {
   const { username, index } = req.body;
 
