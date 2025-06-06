@@ -1,8 +1,8 @@
 const form = document.getElementById('loginForm');
 const resultat = document.getElementById('resultat');
-const logoutBtn = document.getElementById('logoutBtn');
 const API_BASE = window.location.origin;
 
+const logoutBtn = document.getElementById('logoutBtn');
 let eventsGlobaux = [];
 
 form.addEventListener('submit', async (e) => {
@@ -47,6 +47,7 @@ async function afficherEmploiDuTemps(username, schedule, events = []) {
   document.getElementById('emploisDuTempsContainer').innerHTML = '';
   document.getElementById('userEvents').innerHTML = '';
   document.getElementById('calendar').innerHTML = '';
+  document.getElementById('calendarEvents').innerHTML = '';
 
   if (username === 'admin') {
     const res = await fetch(`${API_BASE}/api/users/schedules`);
@@ -61,13 +62,29 @@ async function afficherEmploiDuTemps(username, schedule, events = []) {
     let html = `<h2>Bienvenue ${username}</h2><h3>Emploi du temps</h3>`;
     for (let i = 0; i < jours.length; i++) {
       const heure = schedule[i] || '--';
-      html += `<p>${heure}</p>`;
+      html += `<p>${jours[i]} : ${heure}</p>`;
     }
     document.getElementById('emploisDuTempsContainer').innerHTML = html;
 
     eventsGlobaux = events;
     genererCalendrier(eventsGlobaux);
+    afficherEvenements(eventsGlobaux);
   }
+}
+
+function afficherEvenements(events) {
+  const container = document.getElementById('userEvents');
+  if (!events.length) {
+    container.innerHTML = "<p>Aucun événement</p>";
+    return;
+  }
+
+  container.innerHTML = events.map((e, index) => `
+    <div class="event-item">
+      <strong>${e.titre}</strong> (${e.date}) - ${e.type}
+      <button class="delete-btn" onclick="supprimerEvenement(${index})">🗑️</button>
+    </div>
+  `).join('');
 }
 
 document.addEventListener('submit', async (e) => {
@@ -89,6 +106,7 @@ document.addEventListener('submit', async (e) => {
     if (res.ok) {
       eventsGlobaux = data.events;
       genererCalendrier(eventsGlobaux);
+      afficherEvenements(eventsGlobaux);
       e.target.reset();
     } else {
       alert(data.message);
@@ -108,6 +126,7 @@ async function supprimerEvenement(index) {
   if (res.ok) {
     eventsGlobaux = data.events;
     genererCalendrier(eventsGlobaux);
+    afficherEvenements(eventsGlobaux);
   } else {
     alert(data.message);
   }
@@ -156,7 +175,7 @@ function genererCalendrier(events = []) {
       });
 
       if (eventsJour.length) {
-        affichage.innerHTML = `<h4>Événements du ${jour}/${mois + 1}</h4>` + eventsJour.map(e =>
+        affichage.innerHTML = `<h4>Événements du ${jour}/${mois+1}</h4>` + eventsJour.map(e =>
           `<p><strong>${e.titre}</strong> - ${e.type}</p>`
         ).join('');
       } else {
