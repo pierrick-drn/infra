@@ -1,13 +1,14 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #3e3e3e;
+  font-family: 'Orbitron', sans-serif;
+  background-color: #0e0e0e;
+  background-image: linear-gradient(160deg, #0e0e0e 0%, #1a1a1a 100%);
+  color: #f5f5f5;
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #000;
 }
 
 #mainContainer {
@@ -16,39 +17,43 @@ body {
 }
 
 #loginForm {
-  background-color: #ffffff;
+  background: #141414;
   padding: 30px 25px;
   border-radius: 12px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 20px #0ff;
   display: flex;
   flex-direction: column;
   gap: 15px;
   text-align: center;
   width: 320px;
   margin: 0 auto;
+  border: 1px solid #0ff;
 }
 
 input[type="text"],
 input[type="password"] {
   padding: 12px;
-  border: 1px solid #ccc;
+  border: none;
   border-radius: 6px;
   font-size: 14px;
+  background-color: #1e1e1e;
+  color: #0ff;
 }
 
 button[type="submit"] {
-  background-color: #4285f4;
-  color: white;
+  background-color: #0ff;
+  color: #000;
   border: none;
   padding: 12px;
   font-size: 14px;
   border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.3s;
+  font-weight: bold;
 }
 
 button[type="submit"]:hover {
-  background-color: #3367d6;
+  background-color: #00bfff;
 }
 
 #resultat.hidden {
@@ -57,10 +62,10 @@ button[type="submit"]:hover {
 
 #resultat {
   margin-top: 40px;
-  background-color: #ffffff;
+  background-color: #141414;
   padding: 30px;
   border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 15px #0ff;
 }
 
 #topSection {
@@ -74,10 +79,10 @@ button[type="submit"]:hover {
 #userEventsContainer,
 #calendar-container {
   flex: 1;
-  background-color: #f9f9f9;
+  background-color: #1e1e1e;
   border-radius: 10px;
   padding: 20px;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 0 10px #0ff;
   min-width: 280px;
   max-width: 32%;
   box-sizing: border-box;
@@ -96,17 +101,20 @@ button[type="submit"]:hover {
   padding: 8px;
   font-size: 14px;
   border-radius: 5px;
-  border: 1px solid #ccc;
+  border: none;
+  background: #2b2b2b;
+  color: #0ff;
 }
 
 .event-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f2f2f2;
+  background: #2a2a2a;
   padding: 8px;
   margin-bottom: 8px;
   border-radius: 5px;
+  border: 1px solid #0ff;
 }
 
 .delete-btn {
@@ -114,6 +122,7 @@ button[type="submit"]:hover {
   border: none;
   cursor: pointer;
   font-size: 16px;
+  color: #f55;
 }
 
 button,
@@ -122,7 +131,7 @@ button,
 }
 
 .centeredLogout {
-  background-color: #ff5757;
+  background-color: #ff0055;
   color: white;
   border: none;
   padding: 12px 20px;
@@ -132,10 +141,11 @@ button,
   transition: background-color 0.3s;
   display: block;
   margin: 20px auto 0;
+  font-weight: bold;
 }
 
 .centeredLogout:hover {
-  background-color: #cc0000;
+  background-color: #cc0033;
 }
 
 #calendar {
@@ -149,59 +159,64 @@ button,
   width: 100%;
   text-align: center;
   padding: 8px 0;
-  border: 1px solid #ddd;
+  border: 1px solid #444;
   border-radius: 4px;
-  background-color: #ffffff;
+  background-color: #1e1e1e;
   cursor: pointer;
   transition: background-color 0.3s;
+  color: #0ff;
 }
 
 .calendar-day:hover {
-  background-color: #eeeeee;
+  background-color: #333;
 }
 
 .calendar-day.today {
-  background-color: #cce5ff;
-  border: 2px solid #3399ff;
+  background-color: #0ff;
+  color: #000;
+  font-weight: bold;
 }
 
 .calendar-day.selected-day {
-  background-color: #ffd54f !important;
-  border: 2px solid #ff9800;
+  background-color: #ffd700;
+  color: #000;
+  font-weight: bold;
 }
 
 .calendar-day.event-day {
-  background-color: #ffdf7e;
+  background-color: #00ffff44;
   font-weight: bold;
 }
 
 #calendarEvents {
   margin-top: 10px;
-  background-color: #f7f7f7;
+  background-color: #262626;
   padding: 10px;
   border-radius: 6px;
+  color: #0ff;
 }
 
-/* 📅 Tableau emploi du temps personnalisé */
 #planningTable {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
-  background-color: white;
+  background-color: #1a1a1a;
   font-size: 14px;
+  color: #0ff;
 }
 
 #planningTable th,
 #planningTable td {
-  border: 1px solid #ccc;
+  border: 1px solid #333;
   padding: 10px;
   text-align: center;
 }
 
 #planningTable th {
-  background-color: #f0f0f0;
+  background-color: #111;
   font-weight: bold;
 }
+
 .emploi-ligne p {
   margin: 5px 0;
   font-size: 15px;
