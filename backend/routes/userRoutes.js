@@ -7,6 +7,8 @@ const bcrypt = require('bcrypt');
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
   try {
+    console.log("📡 [POST] /api/users/login");
+
     const user = await User.findOne({ username });
     if (!user) {
       console.log("❌ Utilisateur non trouvé :", username);
@@ -30,6 +32,8 @@ router.post('/login', async (req, res) => {
 // 📋 Récupérer tous les plannings (admin)
 router.get('/schedules', async (req, res) => {
   try {
+    console.log("📡 [GET] /api/users/schedules");
+
     const users = await User.find({}, 'username schedule');
     res.json(users);
   } catch (err) {
@@ -41,14 +45,24 @@ router.get('/schedules', async (req, res) => {
 // ➕ Ajouter un événement personnel
 router.post('/add-event', async (req, res) => {
   const { username, titre, date, type } = req.body;
+  console.log("➡️ Requête reçue pour ajout d’événement :", req.body);
+
   try {
     const user = await User.findOne({ username });
-    if (!user) return res.status(404).json({ message: 'Utilisateur introuvable' });
+    if (!user) {
+      console.log("❌ Utilisateur introuvable :", username);
+      return res.status(404).json({ message: 'Utilisateur introuvable' });
+    }
 
-    if (!user.events) user.events = [];
+    if (!user.events) {
+      console.log("ℹ️ Champ 'events' non défini, création forcée");
+      user.events = [];
+    }
+
     user.events.push({ titre, date, type });
     await user.save();
 
+    console.log("✅ Événement ajouté avec succès :", { titre, date, type });
     res.json({ message: 'Événement ajouté', events: user.events });
   } catch (err) {
     console.error("💥 Erreur serveur (add-event) :", err);
@@ -59,6 +73,7 @@ router.post('/add-event', async (req, res) => {
 // ❌ Supprimer un événement
 router.post('/delete-event', async (req, res) => {
   const { username, index } = req.body;
+
   try {
     const user = await User.findOne({ username });
     if (!user || !user.events || index < 0 || index >= user.events.length) {
@@ -68,6 +83,7 @@ router.post('/delete-event', async (req, res) => {
     user.events.splice(index, 1);
     await user.save();
 
+    console.log(`🗑️ Événement supprimé (index ${index}) pour ${username}`);
     res.json({ message: 'Événement supprimé', events: user.events });
   } catch (err) {
     console.error("💥 Erreur serveur (delete-event) :", err);
