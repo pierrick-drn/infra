@@ -107,6 +107,12 @@ button[type="submit"]:hover {
   padding: 8px;
   margin-bottom: 8px;
   border-radius: 5px;
+  color: #000;
+}
+
+body.dark-mode .event-item {
+  background-color: #2c2c2c;
+  color: #e0e0e0;
 }
 
 .delete-btn {
@@ -114,6 +120,7 @@ button[type="submit"]:hover {
   border: none;
   cursor: pointer;
   font-size: 16px;
+  color: inherit;
 }
 
 button,
