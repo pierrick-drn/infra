@@ -63,7 +63,6 @@ async function afficherEmploiDuTemps(username, schedule, events = []) {
     for (const user of users) {
       emploiHtml += `<div class="emploi-ligne"><h4>${user.username}</h4><ul>${user.schedule.map(j => `<li>${j}</li>`).join('')}</ul></div>`;
 
-      // 🔍 Récupérer les events de chaque user
       const resEvents = await fetch(`${window.location.origin}/api/users/get-events`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -235,5 +234,43 @@ window.addEventListener('DOMContentLoaded', async () => {
     afficherEmploiDuTemps(username, schedule, data.events || []);
   } else if (username === 'admin') {
     afficherEmploiDuTemps('admin', [], []);
+  }
+});
+
+// Gestion création d’événement
+document.addEventListener('submit', async (e) => {
+  if (e.target && e.target.id === 'eventForm') {
+    e.preventDefault();
+
+    const username = localStorage.getItem('username');
+    const titre = document.getElementById('eventTitre').value;
+    const date = document.getElementById('eventDate').value;
+    const type = document.getElementById('eventType').value;
+
+    if (!username || !titre || !date || !type) {
+      alert("Tous les champs doivent être remplis.");
+      return;
+    }
+
+    const res = await fetch(`${window.location.origin}/api/users/add-event`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, titre, date, type })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      eventsGlobaux = data.events;
+      if (username === 'admin') {
+        afficherEvenementsAdmin(eventsGlobaux);
+      } else {
+        afficherEvenements(eventsGlobaux);
+      }
+      genererCalendrier(eventsGlobaux);
+      e.target.reset();
+    } else {
+      alert(data.message || "Erreur lors de l'ajout.");
+    }
   }
 });
